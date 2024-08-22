@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 
-const UserRow = ({ user, userId, deleteUser }) => {
-
+const UserRow = ({ user, deleteUser, editUser }) => {
   return (
     <tr>
       <td>
@@ -25,12 +24,18 @@ const UserRow = ({ user, userId, deleteUser }) => {
       </td>
       <td>{user.email}</td>
       <td>
-        <button className="btn btn-outline btn-info btn-sm mr-3">Edit</button>
-        <button className="btn btn-outline btn-error btn-sm" 
-          onClick={() => {
-            deleteUser(userId);
-        }}
-        >Delete</button>
+        <button
+          className="btn btn-outline btn-info btn-sm mr-3"
+          onClick={() => editUser(user.eid)}
+        >
+          Edit
+        </button>
+        <button
+          className="btn btn-outline btn-error btn-sm"
+          onClick={() => deleteUser(user.eid)}
+        >
+          Delete
+        </button>
       </td>
     </tr>
   );
