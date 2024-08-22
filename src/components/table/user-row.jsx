@@ -18,7 +18,7 @@ const UserRow = ({ user, deleteUser, editUser }) => {
         </div>
       </td>
       <td>
-        <span className="badge badge-accent badge-outline badge-sm">
+        <span className="positionInput">
           {user.position}
         </span>
       </td>
@@ -26,7 +26,8 @@ const UserRow = ({ user, deleteUser, editUser }) => {
       <td>
         <button
           className="btn btn-outline btn-info btn-sm mr-3"
-          onClick={() => editUser(user.eid)}
+          // onClick={() => editUser(user.eid)}
+          onClick={() => document.getElementById("my_modal_5").showModal()}
         >
           Edit
         </button>
