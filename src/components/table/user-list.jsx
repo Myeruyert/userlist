@@ -1,12 +1,22 @@
 import React, { useEffect, useState } from "react";
 import UserRow from "./user-row";
 import UserHead from "./user-head";
-import Label from "../label/label";
-import EditButton from "../editButton/edit-button";
+import UserModal from "../user-modal/user-modal";
 
 const UserList = () => {
   const [users, setUsers] = useState();
   const [refetch, setRefetch] = useState(false);
+  const [isOpenModal, setIsOpenModal] = useState(false);
+  const [isEdit, setIsEdit] = useState(false);
+
+  const show = () => {
+    setIsOpenModal(true);
+  };
+
+  const hide = () => {
+    // setIsOpenModal(false)-iig duuddag func
+    setIsOpenModal(false);
+  };
 
   const getEmployeesData = async () => {
     const res = await fetch("http://localhost:8000/users");
@@ -14,20 +24,16 @@ const UserList = () => {
     setUsers(users);
   };
 
-  const saveInfo = async () => {
-    const usernameInput = document?.getElementById("username-input");
-    const mailInput = document?.getElementById("email-input");
-    const positionInput = document?.getElementById("position-input");
-
+  const saveInfo = async (newUser, email, position) => {
     const res = await fetch("http://localhost:8000/users", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        firstname: usernameInput.value,
-        email: mailInput.value,
-        position: positionInput.value,
+        firstname: newUser.firstname,
+        email: email,
+        position: position,
         profileImg: "https://img.daisyui.com/images/profile/demo/2@94.webp",
       }),
     });
@@ -44,10 +50,7 @@ const UserList = () => {
     setRefetch(!refetch);
   };
 
-  const editUser = async (userId) => {
-    const usernameInput = document?.getElementById("username-input");
-    const mailInput = document?.getElementById("email-input");
-    const positionInput = document?.getElementById("position-input");
+  const editUser = async (userId, name, email, position) => {
     console.log("userId", userId);
     const res = await fetch(`http://localhost:8000/users/${userId}`, {
       method: "PUT",
@@ -55,14 +58,30 @@ const UserList = () => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        firstname: usernameInput.value,
-        email: mailInput.value,
-        position: positionInput.value,
+        firstname: name,
+        email: email,
+        position: position,
         profileImg: "https://img.daisyui.com/images/profile/demo/2@94.webp",
       }),
     });
     const { user } = await res.json();
     setRefetch(!refetch);
+  };
+
+  const handleSave = (newUser) => {
+    console.log("isEdit", isEdit);
+    if (isEdit) {
+      // update
+      // editUser();
+    } else {
+      // save
+      saveInfo();
+    }
+  };
+
+  const handleEdit = () => {
+    setIsEdit(true);
+    show();
   };
 
   useEffect(() => {
@@ -75,38 +94,20 @@ const UserList = () => {
       <div className="flex justify-end">
         <button
           className="btn"
-          onClick={() => document.getElementById("my_modal_5").showModal()}
+          // onClick={() => document.getElementById("my_modal_5").showModal()}
+          onClick={() => {
+            show();
+            setIsEdit(false);
+          }}
         >
           Add a new user
         </button>
-
-        <dialog id="my_modal_5" className="modal modal-bottom sm:modal-middle">
-          <div className="modal-box">
-            <h3 className="font-bold text-lg mb-7">Enter user information</h3>
-            <Label />
-            <div className="flex gap-3 justify-end">
-            <div className="modal-action">
-        <form method="dialog">
-          <button className="btn btn-sm" onClick={() => editUser(reid)}>
-            Edit
-          </button>
-        </form>
-      </div>
-              <div className="modal-action">
-                <form method="dialog">
-                  <button className="btn btn-sm" onClick={saveInfo}>
-                    Save
-                  </button>
-                </form>
-              </div>
-              <div className="modal-action">
-                <form method="dialog">
-                  <button className="btn btn-sm">Close</button>
-                </form>
-              </div>
-            </div>
-          </div>
-        </dialog>
+        <UserModal
+          isOpen={isOpenModal}
+          isEdit={isEdit}
+          handleSave={handleSave}
+          close={hide}
+        />
       </div>
       <div className="overflow-x-auto pt-10">
         <table className="table">
@@ -116,7 +117,7 @@ const UserList = () => {
               <UserRow
                 user={user}
                 deleteUser={deleteUser}
-                // editUser={editUser}
+                handleEdit={handleEdit}
               />
             ))}
           </tbody>
